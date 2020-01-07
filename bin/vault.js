@@ -2,15 +2,9 @@
 'use strict'
 process.title = 'vault'
 
-const createServer = require('..')
+const handler = require('..')
+const http = require('http')
 
-const main = async () => {
-  const server = await createServer()
-  server.listen(8080)
-  console.log('http://localhost:8080')
-}
-
-main().catch(err => {
-  console.error(err)
-  process.exit(1)
-})
+const server = http.createServer(handler)
+server.listen(8080)
+console.log('http://localhost:8080')

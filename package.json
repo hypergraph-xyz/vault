@@ -7,12 +7,15 @@
     "vault": "bin/vault.js"
   },
   "scripts": {
+    "start": "nodemon bin/vault.js",
     "test": "prettier-standard && standard"
   },
   "dependencies": {
+    "body": "^5.1.0",
     "stripe": "^7.15.0"
   },
   "devDependencies": {
+    "nodemon": "^2.0.2",
     "prettier-standard": "^16.1.0",
     "standard": "^14.3.1"
   }

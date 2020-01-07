@@ -1,17 +1,23 @@
 'use strict'
 
-const http = require('http')
-const createWebhookEndpoint = require('./lib/webhook-endpoint')
+const stripe = require('stripe')('TODO_STRIPE_ID')
+const anyBody = require('body/any')
+const { promisify } = require('util')
+const http = require('./lib/http-handler')
+const routes = require('./lib/http-routes')
 
-const createServer = async () => {
-  // const endpoint =
-  await createWebhookEndpoint()
+const { WEBHOOK_SECRET: webhookSecret } = process.env
 
-  const server = http.createServer((req, res) => {
-    res.end('HI')
-  })
+const handler = async (req, res) => {
+  const { post } = routes(req)
 
-  return server
+  if (post('/stripe')) {
+    const body = await promisify(anyBody)(req, res)
+    const sig = req.headers['stripe-signature']
+    const event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
+    console.log('stripe', event)
+    res.end(JSON.stringify({ received: true }))
+  }
 }
 
-module.exports = createServer
+module.exports = http(handler)
