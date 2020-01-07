@@ -2,5 +2,15 @@
   "name": "@hypergraph-xyz/vault",
   "version": "0.0.0",
   "license": "MIT",
-  "repository": "hypergraph-xyz/vault"
+  "repository": "hypergraph-xyz/vault",
+  "scripts": {
+    "test": "prettier-standard && standard"
+  },
+  "dependencies": {
+    "stripe": "^7.15.0"
+  },
+  "devDependencies": {
+    "prettier-standard": "^16.1.0",
+    "standard": "^14.3.1"
+  }
 }
