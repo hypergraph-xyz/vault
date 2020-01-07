@@ -1,6 +1,6 @@
 'use strict'
 
-const stripe = require('stripe')('TODO_STRIPE_ID')
+const stripe = require('stripe')('sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv')
 const textBody = require('body')
 const { promisify } = require('util')
 const http = require('./lib/http-handler')
