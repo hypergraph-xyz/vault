@@ -6,22 +6,35 @@ For more documentation and requirements, check out the Wiki.
 
 ## Deployment
 
+These steps are required set up for any deployment work:
+
 1. Ensure AWS is configured locally using `aws configure`
-2. Install [`fargate(1)`](https://github.com/awslabs/fargatecli) by downloading its latest release and moving the binary to a directory in your `$PATH`, like `/usr/local/bin`.
-3. Create the load balancer
+1. Install [`fargate(1)`](https://github.com/awslabs/fargatecli) by downloading its latest release and moving the binary to a directory in your `$PATH`, like `/usr/local/bin`.
+
+Now to deploy a new version of the service, simply run:
+
+```bash
+npm run deploy
+```
+
+## Bootstrap
+
+These were the steps to bootstrap the deployment:
+
+1. Create the load balancer
 
    `fargate lb create vault --port 80 --region eu-central-1`
 
-4. Create and deploy the service
+1. Create and deploy the service
 
    `fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-central-1`
 
-5. Wait for the service to be up by checking
+1. Wait for the service to be up by checking
 
-   `fargate service info vault`
+   `fargate service info vault --region eu-central-1`
 
-6. Get the load balancer domain from
+1. Get the load balancer domain from
 
-   `fargate lb info vault`
+   `fargate lb info vault --region eu-central-1`
 
-7. Open `http://...amazonaws.com/health`
+1. Open `http://...amazonaws.com/health`
