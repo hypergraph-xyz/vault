@@ -17,24 +17,22 @@ Now to deploy a new version of the service, simply run:
 npm run deploy
 ```
 
-## Bootstrap
+### Bootstrap
 
-These were the steps to bootstrap the deployment:
+These are the steps to bootstrap a new deployment:
 
-1. Create the load balancer
+```bash
+# Create a load balancer
+fargate lb create vault --port 80 --region eu-central-1
 
-   `fargate lb create vault --port 80 --region eu-central-1`
+# Create and deploy the service
+fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-central-1
 
-1. Create and deploy the service
+# Wait for the service to be up by checking
+fargate service info vault --region eu-central-1
 
-   `fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-central-1`
+# Get the load balancer domain from
+fargate lb info vault --region eu-central-1
 
-1. Wait for the service to be up by checking
-
-   `fargate service info vault --region eu-central-1`
-
-1. Get the load balancer domain from
-
-   `fargate lb info vault --region eu-central-1`
-
-1. Open `http://...amazonaws.com/health`
+open http://...amazonaws.com/health
+```
