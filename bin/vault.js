@@ -6,5 +6,5 @@ const handler = require('..')
 const http = require('http')
 
 const server = http.createServer(handler)
-server.listen(8080)
+server.listen(8080, '0.0.0.0')
 console.log('http://localhost:8080')
