@@ -10,4 +10,6 @@ RUN npm ci
 COPY . .
 
 RUN npm install -g pm2
+EXPOSE 80
+ENV PORT=80
 CMD ["pm2-runtime", "bin/vault.js"]
