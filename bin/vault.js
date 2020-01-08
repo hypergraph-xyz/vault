@@ -8,5 +8,5 @@ const http = require('http')
 const { PORT: port = 8080 } = process.env
 
 const server = http.createServer(handler)
-server.listen(port, '0.0.0.0')
+server.listen(port)
 console.log('http://localhost:8080')
