@@ -6,6 +6,7 @@ const { promisify } = require('util')
 const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
 const { json } = require('./lib/http-respond')
+const { Pool } = require('pg')
 
 const {
   WEBHOOK_SECRET: webhookSecret,
@@ -13,6 +14,7 @@ const {
 } = process.env
 
 const stripe = createStripe(stripeSecretKey)
+const pool = new Pool()
 
 const handler = async (req, res) => {
   const { get, post } = routes(req)
@@ -27,6 +29,9 @@ const handler = async (req, res) => {
     const event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
     console.log('stripe', event)
     json(res, { received: true })
+  } else if (get('/now')) {
+    const { rows } = await pool.query('SELECT NOW()')
+    res.end(String(rows[0].now))
   }
 }
 
