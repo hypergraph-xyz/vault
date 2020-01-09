@@ -1,13 +1,18 @@
 'use strict'
 
-const stripe = require('stripe')('sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv')
+const createStripe = require('stripe')
 const textBody = require('body')
 const { promisify } = require('util')
 const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
 const { json } = require('./lib/http-respond')
 
-const { WEBHOOK_SECRET: webhookSecret } = process.env
+const {
+  WEBHOOK_SECRET: webhookSecret,
+  STRIPE_SECRET_KEY: stripeSecretKey = 'sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv'
+} = process.env
+
+const stripe = createStripe(stripeSecretKey)
 
 const handler = async (req, res) => {
   const { get, post } = routes(req)
