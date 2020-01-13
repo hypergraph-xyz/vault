@@ -8,7 +8,6 @@
   },
   "scripts": {
     "deploy": "fargate service deploy vault --region eu-central-1",
-    "migrate": "node-pg-migrate up",
     "create-migration": "scripts/create-migration.js",
     "start": "nodemon bin/vault.js",
     "test": "prettier-standard && standard"
