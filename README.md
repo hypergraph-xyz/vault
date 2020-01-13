@@ -31,6 +31,17 @@ fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-west
 # Wait for the service to be up by checking
 fargate service info vault --region eu-west-1
 
+# Set credentials
+fargate service env set vault \
+  --env PGHOST=... \
+  --env PGUSER=... \
+  --env PGPASSWORD=... \
+  --env PGDATABASE=vault \
+  --region eu-west-1
+
+# Restart the service to refresh the environment
+fargate service restart vault --region eu-west-1
+
 # Get the load balancer domain from
 fargate lb info vault --region eu-west-1
 
