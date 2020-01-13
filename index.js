@@ -8,6 +8,7 @@ const routes = require('./lib/http-routes')
 const { json } = require('./lib/http-respond')
 const { Pool } = require('pg')
 const { promises: fs } = require('fs')
+const { parse } = require('querystring')
 
 const {
   WEBHOOK_SECRET: webhookSecret,
@@ -37,6 +38,10 @@ const handler = async (req, res) => {
     res.end(await fs.readFile(`${__dirname}/views/home.html`))
   } else if (get('/sign-up')) {
     res.end(await fs.readFile(`${__dirname}/views/sign-up.html`))
+  } else if (post('/sign-up')) {
+    const body = await promisify(textBody)(req, res)
+    const { email } = parse(body)
+    res.end(email)
   }
 }
 
