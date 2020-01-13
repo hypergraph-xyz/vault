@@ -32,6 +32,8 @@ const handler = async (req, res) => {
   } else if (get('/now')) {
     const { rows } = await pool.query('SELECT NOW()')
     res.end(String(rows[0].now))
+  } else if (get('/')) {
+    res.end('Home!')
   }
 }
 
