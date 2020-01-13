@@ -22,8 +22,15 @@ npm run deploy
 These are the steps to bootstrap a new deployment:
 
 ```bash
+# Request a certificate
+fargate certificate request vault.hypergraph.xyz
+
+# First create the DNS records as requested, then
+# validate the certificate
+fargate certificate validate vault.hypergraph.xyz
+
 # Create a load balancer
-fargate lb create vault --port 80 --region eu-central-1
+fargate lb create vault-https --port 80 --port 443 --certificate vault.hypergraph.xyz --region eu-central-1
 
 # Create and deploy the service
 fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-central-1
