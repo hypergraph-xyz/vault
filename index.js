@@ -38,7 +38,9 @@ const handler = async (req, res) => {
     res.end(await fs.readFile(`${__dirname}/views/home.html`))
   } else if (get('/sign-up')) {
     res.end(await fs.readFile(`${__dirname}/views/sign-up.html`))
-  } else if (post('/sign-up')) {
+  } else if (get('/sign-in')) {
+    res.end(await fs.readFile(`${__dirname}/views/sign-in.html`))
+  } else if (post('/sign-up') || post('/sign-in')) {
     const body = await promisify(textBody)(req, res)
     const { email } = parse(body)
     res.end(email)
