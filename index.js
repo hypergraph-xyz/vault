@@ -35,6 +35,8 @@ const handler = async (req, res) => {
     res.end(String(rows[0].now))
   } else if (get('/')) {
     res.end(await fs.readFile(`${__dirname}/views/home.html`))
+  } else if (get('/sign-up')) {
+    res.end(await fs.readFile(`${__dirname}/views/sign-up.html`))
   }
 }
 
