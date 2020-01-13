@@ -44,6 +44,9 @@ const handler = async (req, res) => {
     const body = await promisify(textBody)(req, res)
     const { email } = parse(body)
     res.end(email)
+  } else if (get('/modules')) {
+    const { rows } = await pool.query('SELECT * FROM modules')
+    json(res, rows)
   }
 }
 
