@@ -11,8 +11,16 @@ if (!name) {
 
 const content = `'use strict'
 
-exports.up = pgm => {}
-exports.down = pgm => {}
+const up = \`
+
+\`
+
+const down = \`
+
+\`
+
+exports.up = ({ sql }) => sql(up)
+exports.down = ({ sql }) => sql(down)
 `
 
 fs.writeFileSync(`${__dirname}/../migrations/${Date.now()}_${name}.js`, content)
