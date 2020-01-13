@@ -10,7 +10,8 @@ const { PORT: port = 8080 } = process.env
 
 const main = async () => {
   await migrate({
-    dir: `${__dirname}/../migrations`
+    dir: `${__dirname}/../migrations`,
+    direction: 'up'
   })
 
   const server = http.createServer(handler)
