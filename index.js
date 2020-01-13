@@ -7,6 +7,7 @@ const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
 const { json } = require('./lib/http-respond')
 const { Pool } = require('pg')
+const { promises: fs } = require('fs')
 
 const {
   WEBHOOK_SECRET: webhookSecret,
@@ -33,7 +34,7 @@ const handler = async (req, res) => {
     const { rows } = await pool.query('SELECT NOW()')
     res.end(String(rows[0].now))
   } else if (get('/')) {
-    res.end('Home!')
+    res.end(await fs.readFile(`${__dirname}/views/home.html`))
   }
 }
 
