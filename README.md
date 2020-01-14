@@ -13,7 +13,7 @@ yet run on the connected database. How to change the schema:
 
    ```bash
    $ npm run create-migration name of migration
-    Edit migrations/1578995416266_name_of_migration.js
+   Edit migrations/1578995416266_name_of_migration.js
    ```
 
 1. Open the file and fill the variables `up` and `down` with the SQL to run
