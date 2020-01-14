@@ -40,8 +40,19 @@ npm run deploy
 These are the steps to bootstrap a new deployment:
 
 ```bash
+# Request a certificate
+fargate certificate request vault.hypergraph.xyz --region eu-west-1
+
+# Create the DNS records as requested
+# Wait for it's verification
+open https://eu-west-1.console.aws.amazon.com/acm/home?region=eu-west-1#/
+
 # Create a load balancer
-fargate lb create vault --port 80 --region eu-west-1
+fargate lb create vault --port 443 --certificate vault.hypergraph.xyz --region eu-west-1
+
+# Using the AWS UI, add another listener on port 80
+# See https://github.com/awslabs/fargatecli/issues/104
+open https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LoadBalancers:
 
 # Create and deploy the service
 fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-west-1
@@ -56,9 +67,6 @@ fargate service env set vault \
   --env PGPASSWORD=... \
   --env PGDATABASE=vault \
   --region eu-west-1
-
-# Restart the service to refresh the environment
-fargate service restart vault --region eu-west-1
 
 # Get the load balancer domain from
 fargate lb info vault --region eu-west-1
