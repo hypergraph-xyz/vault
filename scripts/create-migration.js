@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs')
+const { relative } = require('path')
 
 const name = process.argv.slice(2).join('_')
 if (!name) {
@@ -25,4 +26,4 @@ exports.down = ({ sql }) => sql(down)
 
 const migrationPath = `${__dirname}/../migrations/${Date.now()}_${name}.js`
 fs.writeFileSync(migrationPath, content)
-console.log(`Edit ${migrationPath}`)
+console.log(`Edit ${relative(`${__dirname}/..`, migrationPath)}`)
