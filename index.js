@@ -9,17 +9,21 @@ const { json } = require('./lib/http-respond')
 const { Pool } = require('pg')
 const { promises: fs } = require('fs')
 const { parse } = require('querystring')
-const AWS = require('aws-sdk')
+const Mailgun = require('mailgun-js')
 
 const {
   WEBHOOK_SECRET: webhookSecret,
-  STRIPE_SECRET_KEY: stripeSecretKey = 'sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv'
+  STRIPE_SECRET_KEY: stripeSecretKey = 'sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv',
+  MAILGUN_API_KEY: mailgunApiKey,
+  MAILGUN_DOMAIN: mailgunDomain
 } = process.env
 
-AWS.config.update({ region: 'eu-west-1' })
 const stripe = createStripe(stripeSecretKey)
 const pool = new Pool()
-const ses = new AWS.SES()
+const mailgun = new Mailgun({
+  apiKey: mailgunApiKey,
+  domain: mailgunDomain
+})
 
 const handler = async (req, res) => {
   const { get, post } = routes(req)
@@ -46,23 +50,12 @@ const handler = async (req, res) => {
   } else if (post('/sign-up') || post('/sign-in')) {
     const body = await promisify(textBody)(req, res)
     const { email } = parse(body)
-    await ses
-      .sendEmail({
-        Destination: { ToAddresses: [email] },
-        Message: {
-          Subject: {
-            Data: 'Vault'
-          },
-          Body: {
-            Text: {
-              Data: 'Test'
-            }
-          }
-        },
-        // Source: 'support@vault.hypergraph.xyz'
-        Source: 'mail@juliangruber.com'
-      })
-      .promise()
+    await mailgun.messages().send({
+      from: 'no-reply@vaul.hypergraph.xyz',
+      to: email,
+      subject: 'Vault',
+      text: 'Test'
+    })
     res.end(email)
   } else if (get('/modules')) {
     const { rows } = await pool.query('SELECT * FROM modules')
