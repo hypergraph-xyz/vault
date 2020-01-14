@@ -9,18 +9,18 @@ For more documentation and requirements, check out the Wiki.
 Whenever you start the server, it will check for and apply any migrations not
 yet run on the connected database. How to change the schema:
 
-1. Create a migration:
+1. Create a migration
 
-```bash
-$ npm run create-migration name of migration
-Edit migrations/1578995416266_name_of_migration.js
-```
+   ```bash
+   $ npm run create-migration name of migration
+    Edit migrations/1578995416266_name_of_migration.js
+   ```
 
 1. Open the file and fill the variables `up` and `down` with the SQL to run
-   (`up`) and roll back (`down`) the migration.
+   (`up`) and roll back (`down`) the migration
 
-1. Start the server to verify the migration runs successfully.
-1. Commit the migration file.
+1. Start the server to verify the migration runs successfully
+1. Commit the migration file
 
 ## Deployment
 
