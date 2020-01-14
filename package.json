@@ -13,6 +13,7 @@
     "test": "prettier-standard && standard"
   },
   "dependencies": {
+    "aws-sdk": "^2.602.0",
     "body": "^5.1.0",
     "node-pg-migrate": "^4.2.1",
     "pg": "^7.17.0",

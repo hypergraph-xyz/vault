@@ -40,6 +40,24 @@ npm run deploy
 These are the steps to bootstrap a new deployment:
 
 ```bash
+# Create a new role for ECS Tasks with name "vault"
+open https://console.aws.amazon.com/iam/home#/roles$new?step=type
+```
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["ses:SendEmail", "ses:SendRawEmail"],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+```bash
 # Request a certificate
 fargate certificate request vault.hypergraph.xyz --region eu-west-1
 
@@ -55,7 +73,12 @@ fargate lb create vault --port 443 --certificate vault.hypergraph.xyz --region e
 open https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LoadBalancers:
 
 # Create and deploy the service
-fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-west-1
+fargate service create vault \
+  --lb vault \
+  --port 80 \
+  --rule PATH=* \
+  --task-role vault
+  --region eu-west-1
 
 # Wait for the service to be up by checking
 fargate service info vault --region eu-west-1
