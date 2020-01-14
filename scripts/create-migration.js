@@ -23,4 +23,6 @@ exports.up = ({ sql }) => sql(up)
 exports.down = ({ sql }) => sql(down)
 `
 
-fs.writeFileSync(`${__dirname}/../migrations/${Date.now()}_${name}.js`, content)
+const migrationPath = `${__dirname}/../migrations/${Date.now()}_${name}.js`
+fs.writeFileSync(migrationPath, content)
+console.log(`Edit ${migrationPath}`)
