@@ -50,7 +50,7 @@ open https://eu-west-1.console.aws.amazon.com/acm/home?region=eu-west-1#/
 # Create a load balancer
 fargate lb create vault --port 443 --certificate vault.hypergraph.xyz --region eu-west-1
 
-# Using the AWS UI, add another listener on port 80
+# Using the AWS UI, add another listener on port 80, which redirects to HTTPS
 # See https://github.com/awslabs/fargatecli/issues/104
 open https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LoadBalancers:
 
