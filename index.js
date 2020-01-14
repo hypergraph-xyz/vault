@@ -7,6 +7,8 @@ const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
 const { json } = require('./lib/http-respond')
 const { Pool } = require('pg')
+const { promises: fs } = require('fs')
+const { parse } = require('querystring')
 
 const {
   WEBHOOK_SECRET: webhookSecret,
@@ -32,6 +34,19 @@ const handler = async (req, res) => {
   } else if (get('/now')) {
     const { rows } = await pool.query('SELECT NOW()')
     res.end(String(rows[0].now))
+  } else if (get('/')) {
+    res.end(await fs.readFile(`${__dirname}/views/home.html`))
+  } else if (get('/sign-up')) {
+    res.end(await fs.readFile(`${__dirname}/views/sign-up.html`))
+  } else if (get('/sign-in')) {
+    res.end(await fs.readFile(`${__dirname}/views/sign-in.html`))
+  } else if (post('/sign-up') || post('/sign-in')) {
+    const body = await promisify(textBody)(req, res)
+    const { email } = parse(body)
+    res.end(email)
+  } else if (get('/modules')) {
+    const { rows } = await pool.query('SELECT * FROM modules')
+    json(res, rows)
   }
 }
 

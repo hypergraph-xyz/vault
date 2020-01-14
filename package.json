@@ -7,12 +7,14 @@
     "vault": "bin/vault.js"
   },
   "scripts": {
-    "deploy": "fargate service deploy vault --region eu-central-1",
+    "deploy": "fargate service deploy vault --region eu-west-1",
+    "create-migration": "scripts/create-migration.js",
     "start": "nodemon bin/vault.js",
     "test": "prettier-standard && standard"
   },
   "dependencies": {
     "body": "^5.1.0",
+    "node-pg-migrate": "^4.2.1",
     "pg": "^7.17.0",
     "stripe": "^7.15.0"
   },

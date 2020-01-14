@@ -30,16 +30,27 @@ fargate certificate request vault.hypergraph.xyz
 fargate certificate validate vault.hypergraph.xyz
 
 # Create a load balancer
-fargate lb create vault-https --port 80 --port 443 --certificate vault.hypergraph.xyz --region eu-central-1
+fargate lb create vault --port 80 --port 443 --certificate vault.hypergraph.xyz --region eu-west-1
 
 # Create and deploy the service
-fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-central-1
+fargate service create vault --lb vault --port 80 --rule PATH=* --region eu-west-1
 
 # Wait for the service to be up by checking
-fargate service info vault --region eu-central-1
+fargate service info vault --region eu-west-1
+
+# Set credentials
+fargate service env set vault \
+  --env PGHOST=... \
+  --env PGUSER=... \
+  --env PGPASSWORD=... \
+  --env PGDATABASE=vault \
+  --region eu-west-1
+
+# Restart the service to refresh the environment
+fargate service restart vault --region eu-west-1
 
 # Get the load balancer domain from
-fargate lb info vault --region eu-central-1
+fargate lb info vault --region eu-west-1
 
 open http://...amazonaws.com/health
 ```
