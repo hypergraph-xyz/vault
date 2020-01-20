@@ -18,7 +18,8 @@ const {
   STRIPE_SECRET_KEY: stripeSecretKey = 'sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv',
   MAILGUN_API_KEY: mailgunApiKey,
   MAILGUN_DOMAIN: mailgunDomain = 'smtp.hypergraph.xyz',
-  MAILGUN_HOST: mailgunHost = 'api.eu.mailgun.net'
+  MAILGUN_HOST: mailgunHost = 'api.eu.mailgun.net',
+  VAULT_URL: vaultUrl = 'http://localhost:8080'
 } = process.env
 
 const stripe = createStripe(stripeSecretKey)
@@ -57,7 +58,7 @@ const handler = async (req, res) => {
     const token = (await promisify(randomBytes)(48)).toString('hex')
     await pool.query('INSERT INTO sign_in_tokens (value) VALUES ($1)', [token])
 
-    const link = `https://vault.hypergraph.xyz/sign-in-token?token=${token}`
+    const link = `${vaultUrl}/sign-in-token?token=${token}`
     const email = req.url === '/sign-up' ? emails.signUp : emails.signIn
 
     await mailgun.messages().send({
@@ -67,10 +68,7 @@ const handler = async (req, res) => {
     })
     res.end('Please check your email.')
   } else if (get('/sign-in-token')) {
-    const token = new URL(
-      req.url,
-      'https://vault.hypergraph.xyz'
-    ).searchParams.get('token')
+    const token = new URL(req.url, vaultUrl).searchParams.get('token')
     // TODO: check age <= 24h
     const { rows } = await pool.query(
       'SELECT * FROM sign_in_tokens WHERE value = $1',

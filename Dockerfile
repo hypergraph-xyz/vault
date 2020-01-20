@@ -12,4 +12,5 @@ COPY . .
 RUN npm install -g pm2
 EXPOSE 80
 ENV PORT=80
+ENV VAULT_URL=https://vault.hypergraph.xyz
 CMD ["pm2-runtime", "bin/vault.js"]
