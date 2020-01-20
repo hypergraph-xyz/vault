@@ -58,7 +58,7 @@ const handler = async (req, res) => {
     const token = (await promisify(randomBytes)(48)).toString('hex')
     await pool.query('INSERT INTO sign_in_tokens (value) VALUES ($1)', [token])
 
-    const link = `${vaultUrl}/sign-in-token?token=${token}`
+    const link = `${vaultUrl}/create-session?token=${token}`
     const email = req.url === '/sign-up' ? emails.signUp : emails.signIn
 
     await mailgun.messages().send({
@@ -67,7 +67,7 @@ const handler = async (req, res) => {
       to
     })
     res.end('Please check your email.')
-  } else if (get('/sign-in-token')) {
+  } else if (get('/create-session')) {
     const token = new URL(req.url, vaultUrl).searchParams.get('token')
     const query = `
       SELECT * FROM sign_in_tokens
