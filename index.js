@@ -35,7 +35,7 @@ const handler = async (req, res) => {
       uptime: process.uptime()
     })
   } else if (post('/stripe')) {
-    const body = await promisify(textBody)(req, res)
+    const body = await promisify(textBody)(req, res, { encoding: undefined })
     const sig = req.headers['stripe-signature']
     const event = stripe.webhooks.constructEvent(body, sig, stripeWebhookSecret)
     console.log('stripe', event)
