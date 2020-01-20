@@ -69,16 +69,16 @@ const handler = async (req, res) => {
     res.end('Please check your email.')
   } else if (get('/create-session')) {
     const token = new URL(req.url, vaultUrl).searchParams.get('token')
+
     const query = `
-      SELECT * FROM sign_in_tokens
+      DELETE FROM sign_in_tokens
       WHERE value = $1
       AND created_at >= NOW() - '1 day'::interval
     `
-    const { rows } = await pool.query(query, [token])
-    // TODO: atomic
-    await pool.query('DELETE FROM sign_in_tokens WHERE value = $1', [token])
+    const { rowCount } = await pool.query(query, [token])
+
     // TODO: if the user doesn't yet exist, create them
-    if (rows.length === 1) {
+    if (rowCount === 1) {
       res.end('Now you would be signed in!')
     }
   } else if (get('/modules')) {
