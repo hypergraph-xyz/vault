@@ -12,7 +12,7 @@ const { parse } = require('querystring')
 const Mailgun = require('mailgun-js')
 
 const {
-  WEBHOOK_SECRET: webhookSecret,
+  STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
   STRIPE_SECRET_KEY: stripeSecretKey = 'sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv',
   MAILGUN_API_KEY: mailgunApiKey,
   MAILGUN_DOMAIN: mailgunDomain = 'smtp.hypergraph.xyz',
@@ -37,7 +37,7 @@ const handler = async (req, res) => {
   } else if (post('/stripe')) {
     const body = await promisify(textBody)(req, res)
     const sig = req.headers['stripe-signature']
-    const event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
+    const event = stripe.webhooks.constructEvent(body, sig, stripeWebhookSecret)
     console.log('stripe', event)
     json(res, { received: true })
   } else if (get('/now')) {
