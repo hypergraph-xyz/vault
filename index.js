@@ -81,6 +81,12 @@ const handler = async (req, res) => {
     if (rowCount === 1) {
       res.end('Now you would be signed in!')
     }
+
+    const cleanup = `
+      DELETE FROM sign_in_tokens
+      WHERE created_at < NOW() - '1 day'::interval
+    `
+    pool.query(cleanup).catch(console.error)
   } else if (get('/modules')) {
     const { rows } = await pool.query('SELECT * FROM modules')
     json(res, rows)
