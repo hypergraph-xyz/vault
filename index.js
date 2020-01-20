@@ -15,14 +15,16 @@ const {
   WEBHOOK_SECRET: webhookSecret,
   STRIPE_SECRET_KEY: stripeSecretKey = 'sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv',
   MAILGUN_API_KEY: mailgunApiKey,
-  MAILGUN_DOMAIN: mailgunDomain
+  MAILGUN_DOMAIN: mailgunDomain = 'smtp.hypergraph.xyz',
+  MAILGUN_HOST: mailgunHost = 'api.eu.mailgun.net'
 } = process.env
 
 const stripe = createStripe(stripeSecretKey)
 const pool = new Pool()
 const mailgun = new Mailgun({
   apiKey: mailgunApiKey,
-  domain: mailgunDomain
+  domain: mailgunDomain,
+  host: mailgunHost
 })
 
 const handler = async (req, res) => {
@@ -51,7 +53,7 @@ const handler = async (req, res) => {
     const body = await promisify(textBody)(req, res)
     const { email } = parse(body)
     await mailgun.messages().send({
-      from: 'no-reply@vaul.hypergraph.xyz',
+      from: 'Hypergraph <support@hypergraph.xyz>',
       to: email,
       subject: 'Vault',
       text: 'Test'
