@@ -89,6 +89,7 @@ fargate service env set vault \
   --env PGUSER=... \
   --env PGPASSWORD=... \
   --env PGDATABASE=vault \
+  --env MAILGUN_API_KEY=... \
   --region eu-west-1
 
 # Get the load balancer domain from
