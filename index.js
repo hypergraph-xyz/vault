@@ -10,6 +10,8 @@ const { Pool } = require('pg')
 const { promises: fs } = require('fs')
 const { parse } = require('querystring')
 const Mailgun = require('mailgun-js')
+const { randomBytes } = require('crypto')
+const emails = require('./lib/emails')
 
 const {
   STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
@@ -51,14 +53,35 @@ const handler = async (req, res) => {
     res.end(await fs.readFile(`${__dirname}/views/sign-in.html`))
   } else if (post('/sign-up') || post('/sign-in')) {
     const body = await promisify(textBody)(req, res)
-    const { email } = parse(body)
+    const { email: to } = parse(body)
+    const token = (await promisify(randomBytes)(48)).toString('hex')
+    await pool.query('INSERT INTO sign_in_tokens (value) VALUES ($1)', [token])
+
+    const link = `https://vault.hypergraph.xyz/sign-in-token?token=${token}`
+    const email = req.url === '/sign-up' ? emails.signUp : emails.signIn
+
     await mailgun.messages().send({
+      ...email(link),
       from: 'Hypergraph <support@hypergraph.xyz>',
-      to: email,
-      subject: 'Vault',
-      text: 'Test'
+      to
     })
-    res.end(email)
+    res.end('Please check your email.')
+  } else if (get('/sign-in-token')) {
+    const token = new URL(
+      req.url,
+      'https://vault.hypergraph.xyz'
+    ).searchParams.get('token')
+    // TODO: check age <= 24h
+    const { rows } = await pool.query(
+      'SELECT * FROM sign_in_tokens WHERE value = $1',
+      [token]
+    )
+    // TODO: atomic
+    await pool.query('DELETE FROM sign_in_tokens WHERE value = $1', [token])
+    // TODO: if the user doesn't yet exist, create them
+    if (rows.length === 1) {
+      res.end('Now you would be signed in!')
+    }
   } else if (get('/modules')) {
     const { rows } = await pool.query('SELECT * FROM modules')
     json(res, rows)
