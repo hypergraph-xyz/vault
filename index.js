@@ -15,7 +15,7 @@ const emails = require('./lib/emails')
 
 const {
   STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
-  STRIPE_SECRET_KEY: stripeSecretKey = 'sk_test_w2QavCvblOXzADndimzfhC7I00Wyxy5JJv',
+  STRIPE_SECRET_KEY: stripeSecretKey,
   MAILGUN_API_KEY: mailgunApiKey,
   MAILGUN_DOMAIN: mailgunDomain = 'smtp.hypergraph.xyz',
   MAILGUN_HOST: mailgunHost = 'api.eu.mailgun.net',

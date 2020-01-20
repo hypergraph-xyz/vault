@@ -4,6 +4,10 @@ We are building the Hypergraph Vault as a service to persistently host content. 
 
 For more documentation and requirements, check out the Wiki.
 
+## Secrets
+
+In production secrets are passed in via environment variables, for local development copy `.env.example` to `.env` and fill in all the secrets.
+
 ## Migrations
 
 Whenever you start the server, it will check for and apply any migrations not
