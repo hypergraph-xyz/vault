@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 'use strict'
 process.title = 'vault'
-require('dotenv').config()
+
+let dotenv
+try {
+  dotenv = require('dotenv')
+} catch (_) {}
+if (dotenv) {
+  dotenv.config()
+}
 
 const handler = require('..')
 const http = require('http')
