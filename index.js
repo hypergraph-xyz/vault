@@ -42,7 +42,6 @@ const handler = async (req, res) => {
       session = branca.decode(token).toString()
     } catch (_) {}
   }
-
   const view = createView({ session })
 
   if (get('/health')) {
