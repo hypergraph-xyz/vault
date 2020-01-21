@@ -81,11 +81,9 @@ const handler = async (req, res) => {
       from: 'Hypergraph <support@hypergraph.xyz>',
       to
     })
-    res.end('Please check your email.')
+    res.end('Please check your email. You can close this window now.')
   } else if (get('/create-session')) {
     const token = new URL(req.url, vaultUrl).searchParams.get('token')
-    const email = branca.decode(token)
-
     const query = `
       DELETE FROM sign_in_tokens
       WHERE value = $1
@@ -95,7 +93,7 @@ const handler = async (req, res) => {
 
     if (rowCount === 1) {
       cookie.set(res, 'token', token)
-      res.end(`Hey, ${email}!`)
+      redirect(req, res, '/')
     }
 
     const cleanup = `
