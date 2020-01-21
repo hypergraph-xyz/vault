@@ -81,7 +81,7 @@ const handler = async (req, res) => {
     const { rowCount } = await pool.query(query, [token])
 
     if (rowCount === 1) {
-      res.setHeader('set-cookie', `token=${token}`)
+      res.setHeader('set-cookie', `token=${token}; HttpOnly`)
       res.end(`Hey, ${email}!`)
     }
 
