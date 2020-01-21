@@ -44,24 +44,6 @@ npm run deploy
 These are the steps to bootstrap a new deployment:
 
 ```bash
-# Create a new role for ECS Tasks with name "vault"
-open https://console.aws.amazon.com/iam/home#/roles$new?step=type
-```
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": ["ses:SendEmail", "ses:SendRawEmail"],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-```bash
 # Request a certificate
 fargate certificate request vault.hypergraph.xyz --region eu-west-1
 
