@@ -6,6 +6,7 @@ const { promisify } = require('util')
 const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
 const { json, redirect } = require('./lib/http-respond')
+const cookie = require('./lib/http-cookie')
 const { Pool } = require('pg')
 const { promises: fs } = require('fs')
 const { parse } = require('querystring')
@@ -81,7 +82,7 @@ const handler = async (req, res) => {
     const { rowCount } = await pool.query(query, [token])
 
     if (rowCount === 1) {
-      res.setHeader('set-cookie', `token=${token}; HttpOnly`)
+      cookie.set(res, 'token', token)
       res.end(`Hey, ${email}!`)
     }
 
@@ -91,7 +92,7 @@ const handler = async (req, res) => {
     `
     pool.query(cleanup).catch(console.error)
   } else if (get('/sign-out')) {
-    res.setHeader('set-cookie', 'token=; max-age=0')
+    cookie.unset(res, 'token')
     redirect(req, res, '/')
   } else if (get('/modules')) {
     const { rows } = await pool.query('SELECT * FROM modules')

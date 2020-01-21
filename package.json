@@ -15,6 +15,7 @@
   "dependencies": {
     "body": "^5.1.0",
     "branca": "^0.3.0",
+    "cookie": "^0.4.0",
     "mailgun-js": "^0.22.0",
     "node-pg-migrate": "^4.2.1",
     "pg": "^7.17.0",
