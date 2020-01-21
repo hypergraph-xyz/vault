@@ -37,8 +37,16 @@ const handler = async (req, res) => {
   const { get, post } = routes(req)
 
   if (get('/health')) {
+    let dbTime
+    try {
+      const { rows } = await pool.query('SELECT NOW()')
+      dbTime = String(rows[0].now)
+    } catch (err) {
+      console.error(err)
+    }
     json(res, {
-      uptime: process.uptime()
+      uptime: process.uptime(),
+      dbTime
     })
   } else if (post('/stripe')) {
     const body = await promisify(textBody)(req, res, { encoding: undefined })
