@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vault</title>
+  </head>
+  <body>
+    <h1>Vault</h1>
+    <p>
+      Welcome to the Vault{{#session}}, {{session}}{{/session}}!
+    </p>
+    <p>
+      {{#session}}
+        <a href="/sign-out">Sign out</a>
+      {{/session}}
+      {{^session}}
+        <a href="/sign-up">Sign up!</a>
+        <a href="/sign-in">Sign in</a>
+      {{/session}}
+      <a href="/modules">Modules</a> 
+    </p>
+    {{{body}}}
+  </body>
+</html>

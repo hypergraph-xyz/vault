@@ -7,13 +7,12 @@ const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
 const { json, redirect } = require('./lib/http-respond')
 const cookie = require('./lib/http-cookie')
+const createView = require('./lib/http-view')
 const { Pool } = require('pg')
-const { promises: fs } = require('fs')
 const { parse } = require('querystring')
 const Mailgun = require('mailgun-js')
 const emails = require('./lib/emails')
 const createBranca = require('branca')
-const mustache = require('mustache')
 
 const {
   STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
@@ -38,6 +37,7 @@ const handler = async (req, res) => {
   const { get, post } = routes(req)
   const token = cookie.get(req, 'token')
   const session = token && branca.decode(token)
+  const view = createView({ session })
 
   if (get('/health')) {
     let dbTime
@@ -58,15 +58,11 @@ const handler = async (req, res) => {
     console.log('stripe', event)
     json(res, { received: true })
   } else if (get('/')) {
-    const template = await fs.readFile(
-      `${__dirname}/views/home.mustache`,
-      'utf8'
-    )
-    res.end(mustache.render(template, { session }))
+    res.end(await view('home'))
   } else if (get('/sign-up')) {
-    res.end(await fs.readFile(`${__dirname}/views/sign-up.html`))
+    res.end(await view('sign-up'))
   } else if (get('/sign-in')) {
-    res.end(await fs.readFile(`${__dirname}/views/sign-in.html`))
+    res.end(await view('sign-in'))
   } else if (post('/sign-up') || post('/sign-in')) {
     const body = await promisify(textBody)(req, res)
     const { email: to } = parse(body)
@@ -81,7 +77,7 @@ const handler = async (req, res) => {
       from: 'Hypergraph <support@hypergraph.xyz>',
       to
     })
-    res.end('Please check your email. You can close this window now.')
+    res.end(await view('check-email'))
   } else if (get('/create-session')) {
     const token = new URL(req.url, vaultUrl).searchParams.get('token')
     const query = `
@@ -105,8 +101,10 @@ const handler = async (req, res) => {
     cookie.unset(res, 'token')
     redirect(req, res, '/')
   } else if (get('/modules')) {
-    const { rows } = await pool.query('SELECT * FROM modules')
-    json(res, rows)
+    const { rows: modules } = await pool.query('SELECT * FROM modules')
+    res.end(
+      await view('modules', { modules: JSON.stringify(modules, null, 2) })
+    )
   }
 }
 
