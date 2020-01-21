@@ -96,6 +96,7 @@ fargate service env set vault \
   --env MAILGUN_API_KEY=... \
   --env STRIPE_SECRET_KEY=... \
   --env STRIPE_WEBHOOK_SECRET=... \
+  --env BRANCA_KEY... \
   --region eu-west-1
 
 # Get the load balancer domain from
