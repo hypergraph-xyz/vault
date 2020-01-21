@@ -36,7 +36,13 @@ const mailgun = new Mailgun({
 const handler = async (req, res) => {
   const { get, post } = routes(req)
   const token = cookie.get(req, 'token')
-  const session = token && branca.decode(token).toString()
+  let session
+  if (token) {
+    try {
+      session = branca.decode(token).toString()
+    } catch (_) {}
+  }
+
   const view = createView({ session })
 
   if (get('/health')) {
