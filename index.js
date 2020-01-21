@@ -13,6 +13,7 @@ const { parse } = require('querystring')
 const Mailgun = require('mailgun-js')
 const emails = require('./lib/emails')
 const createBranca = require('branca')
+const mustache = require('mustache')
 
 const {
   STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
@@ -35,6 +36,8 @@ const mailgun = new Mailgun({
 
 const handler = async (req, res) => {
   const { get, post } = routes(req)
+  const token = cookie.get(req, 'token')
+  const session = token && branca.decode(token)
 
   if (get('/health')) {
     let dbTime
@@ -55,7 +58,11 @@ const handler = async (req, res) => {
     console.log('stripe', event)
     json(res, { received: true })
   } else if (get('/')) {
-    res.end(await fs.readFile(`${__dirname}/views/home.html`))
+    const template = await fs.readFile(
+      `${__dirname}/views/home.mustache`,
+      'utf8'
+    )
+    res.end(mustache.render(template, { session }))
   } else if (get('/sign-up')) {
     res.end(await fs.readFile(`${__dirname}/views/sign-up.html`))
   } else if (get('/sign-in')) {
