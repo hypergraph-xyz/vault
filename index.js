@@ -46,9 +46,6 @@ const handler = async (req, res) => {
     const event = stripe.webhooks.constructEvent(body, sig, stripeWebhookSecret)
     console.log('stripe', event)
     json(res, { received: true })
-  } else if (get('/now')) {
-    const { rows } = await pool.query('SELECT NOW()')
-    res.end(String(rows[0].now))
   } else if (get('/')) {
     res.end(await fs.readFile(`${__dirname}/views/home.html`))
   } else if (get('/sign-up')) {
