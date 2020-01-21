@@ -10,8 +10,8 @@ const { Pool } = require('pg')
 const { promises: fs } = require('fs')
 const { parse } = require('querystring')
 const Mailgun = require('mailgun-js')
-const { randomBytes } = require('crypto')
 const emails = require('./lib/emails')
+const createBranca = require('branca')
 
 const {
   STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
@@ -19,10 +19,12 @@ const {
   MAILGUN_API_KEY: mailgunApiKey,
   MAILGUN_DOMAIN: mailgunDomain = 'smtp.hypergraph.xyz',
   MAILGUN_HOST: mailgunHost = 'api.eu.mailgun.net',
-  VAULT_URL: vaultUrl = 'http://localhost:8080'
+  VAULT_URL: vaultUrl = 'http://localhost:8080',
+  BRANCA_KEY: brancaKey
 } = process.env
 
 const stripe = createStripe(stripeSecretKey)
+const branca = createBranca(brancaKey)
 const pool = new Pool()
 const mailgun = new Mailgun({
   apiKey: mailgunApiKey,
@@ -55,7 +57,7 @@ const handler = async (req, res) => {
   } else if (post('/sign-up') || post('/sign-in')) {
     const body = await promisify(textBody)(req, res)
     const { email: to } = parse(body)
-    const token = (await promisify(randomBytes)(48)).toString('hex')
+    const token = branca.encode(to)
     await pool.query('INSERT INTO sign_in_tokens (value) VALUES ($1)', [token])
 
     const link = `${vaultUrl}/create-session?token=${token}`
@@ -69,6 +71,7 @@ const handler = async (req, res) => {
     res.end('Please check your email.')
   } else if (get('/create-session')) {
     const token = new URL(req.url, vaultUrl).searchParams.get('token')
+    const email = branca.decode(token)
 
     const query = `
       DELETE FROM sign_in_tokens
@@ -77,9 +80,9 @@ const handler = async (req, res) => {
     `
     const { rowCount } = await pool.query(query, [token])
 
-    // TODO: if the user doesn't yet exist, create them
     if (rowCount === 1) {
-      res.end('Now you would be signed in!')
+      res.setHeader('set-cookie', `token=${token}`)
+      res.end(`Hey, ${email}!`)
     }
 
     const cleanup = `
