@@ -18,6 +18,7 @@
     "mailgun-js": "^0.22.0",
     "node-pg-migrate": "^4.2.1",
     "pg": "^7.17.0",
+    "predirect": "^1.1.0",
     "stripe": "^7.15.0"
   },
   "devDependencies": {

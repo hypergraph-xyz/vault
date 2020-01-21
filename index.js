@@ -5,7 +5,7 @@ const textBody = require('body')
 const { promisify } = require('util')
 const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
-const { json } = require('./lib/http-respond')
+const { json, redirect } = require('./lib/http-respond')
 const { Pool } = require('pg')
 const { promises: fs } = require('fs')
 const { parse } = require('querystring')
@@ -90,6 +90,9 @@ const handler = async (req, res) => {
       WHERE created_at < NOW() - '1 day'::interval
     `
     pool.query(cleanup).catch(console.error)
+  } else if (get('/sign-out')) {
+    res.setHeader('set-cookie', 'token=; max-age=0')
+    redirect(req, res, '/')
   } else if (get('/modules')) {
     const { rows } = await pool.query('SELECT * FROM modules')
     json(res, rows)
