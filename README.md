@@ -45,14 +45,14 @@ These are the steps to bootstrap a new deployment:
 
 ```bash
 # Request a certificate
-fargate certificate request vault.hypergraph.xyz --region eu-west-1
+fargate certificate request VAULT_DOMAIN --region eu-west-1
 
 # Create the DNS records as requested
 # Wait for it's verification
 open https://eu-west-1.console.aws.amazon.com/acm/home?region=eu-west-1#/
 
 # Create a load balancer
-fargate lb create vault --port 443 --certificate vault.hypergraph.xyz --region eu-west-1
+fargate lb create vault --port 443 --certificate VAULT_DOMAIN --region eu-west-1
 
 # Using the AWS UI, add another listener on port 80, which redirects to HTTPS
 # See https://github.com/awslabs/fargatecli/issues/104
@@ -78,7 +78,8 @@ fargate service env set vault \
   --env MAILGUN_API_KEY=... \
   --env STRIPE_SECRET_KEY=... \
   --env STRIPE_WEBHOOK_SECRET=... \
-  --env BRANCA_KEY... \
+  --env BRANCA_KEY=... \
+  --env VAULT_URL=https://VAULT_DOMAIN \
   --region eu-west-1
 
 # Get the load balancer domain from
