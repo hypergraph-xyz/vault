@@ -16,6 +16,7 @@ const createBranca = require('branca')
 
 const {
   STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
+  STRIPE_PUBLIC_KEY: stripePublicKey,
   STRIPE_SECRET_KEY: stripeSecretKey,
   MAILGUN_API_KEY: mailgunApiKey,
   MAILGUN_DOMAIN: mailgunDomain = 'smtp.hypergraph.xyz',
@@ -65,7 +66,7 @@ const handler = async (req, res) => {
   } else if (get('/')) {
     res.end(await view('home'))
   } else if (get('/sign-up')) {
-    res.end(await view('sign-up'))
+    res.end(await view('sign-up', { stripePublicKey }))
   } else if (get('/sign-in')) {
     res.end(await view('sign-in'))
   } else if (post('/sign-up') || post('/sign-in')) {
