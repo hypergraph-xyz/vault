@@ -110,6 +110,9 @@ const handler = async (req, res) => {
     res.end(
       await view('modules', { modules: JSON.stringify(modules, null, 2) })
     )
+  } else if (get('/api/modules')) {
+    const { rows: modules } = await pool.query('SELECT * FROM modules')
+    json(res, modules)
   }
 }
 
