@@ -1,0 +1,21 @@
+{
+  "name": "@hypergraph-xyz/vault-worker",
+  "version": "0.0.0",
+  "license": "MIT",
+  "repository": "hypergraph-xyz/vault",
+  "bin": {
+    "worker": "bin/worker.js"
+  },
+  "scripts": {
+    "start": "nodemon bin/worker.js",
+    "test": "prettier-standard && standard"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2",
+    "prettier-standard": "^16.1.0",
+    "standard": "^14.3.1"
+  }
+}
