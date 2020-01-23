@@ -11,6 +11,7 @@
     "test": "prettier-standard && standard"
   },
   "dependencies": {
+    "@p2pcommons/sdk-js": "^0.3.4",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
