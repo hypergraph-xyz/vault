@@ -6,11 +6,12 @@ const Worker = require('..')
 
 const {
   VAULT_URL: vaultUrl = 'http://localhost:8080',
-  PORT: port = 1000
+  SWARM_PORT: swarmPort = 1000,
+  HTTP_PORT: httpPort = 3000
 } = process.env
 
 const main = async () => {
-  const worker = new Worker({ vaultUrl, port })
+  const worker = new Worker({ vaultUrl, swarmPort, httpPort })
   await worker.start()
 }
 

@@ -7,14 +7,26 @@ const hyperswarm = require('hyperswarm')
 const { toBuf, toStr } = require('dat-encoding')
 const { promisify } = require('util')
 const { pipeline } = require('stream')
+const http = require('http')
 
 class Worker {
-  constructor ({ vaultUrl, port }) {
+  constructor ({ vaultUrl, swarmPort, httpPort }) {
     this.vaultUrl = vaultUrl
-    this.port = port
+    this.swarmPort = swarmPort
+    this.httpPort = httpPort
   }
 
-  async start () {
+  async startHttp () {
+    const server = http.createServer((req, res) => {
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify({ uptime: process.uptime() }))
+    })
+    await promisify(server.listen.bind(server))(this.httpPort)
+    console.log(`http://localhost:${this.httpPort}`)
+    await new Promise(() => {})
+  }
+
+  async startSwarm () {
     const drives = new Map()
 
     const swarm = hyperswarm({ queue: { multiplex: true } })
@@ -48,6 +60,12 @@ class Worker {
       console.log('join', toStr(drive.discoveryKey))
       swarm.join(drive.discoveryKey, { announce: true, lookup: true })
     }
+
+    await new Promise(() => {})
+  }
+
+  async start () {
+    await Promise.race([this.startHttp(), this.startSwarm()])
   }
 }
 
