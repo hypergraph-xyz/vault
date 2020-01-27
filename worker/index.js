@@ -9,8 +9,9 @@ const { promisify } = require('util')
 const { pipeline } = require('stream')
 
 class Worker {
-  constructor ({ vaultUrl }) {
+  constructor ({ vaultUrl, port }) {
     this.vaultUrl = vaultUrl
+    this.port = port
   }
 
   async start () {
@@ -34,7 +35,7 @@ class Worker {
         }
       }
     })
-    await promisify(swarm.listen.bind(swarm))()
+    await promisify(swarm.listen.bind(swarm))(this.port)
 
     const res = await fetch(`${this.vaultUrl}/api/modules`)
     const modules = await res.json()
