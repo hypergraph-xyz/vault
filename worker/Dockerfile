@@ -11,6 +11,7 @@ COPY . .
 RUN npm install -g pm2
 ENV NODE_ENV=production
 ENV SWARM_PORT=1000
-EXPOSE 1000
+ENV HTTP_PORT=80
+EXPOSE 1000 80
 
 CMD ["pm2-runtime", "bin/worker.js"]
