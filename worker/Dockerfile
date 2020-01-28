@@ -1,8 +1,7 @@
-FROM node:12-alpine
+FROM node:12
 
 WORKDIR /usr/app
 
-RUN apk add make g++ python2 git libtool autoconf automake
 COPY package.json .
 COPY package-lock.json .
 RUN npm ci
