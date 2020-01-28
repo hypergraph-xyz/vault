@@ -8,6 +8,7 @@ const { toBuf, toStr } = require('dat-encoding')
 const { promisify } = require('util')
 const { pipeline } = require('stream')
 const http = require('http')
+const { json } = require('http-responders')
 
 class Worker {
   constructor ({ vaultUrl, swarmPort, httpPort }) {
@@ -18,8 +19,7 @@ class Worker {
 
   async startHttp () {
     const server = http.createServer((req, res) => {
-      res.setHeader('content-type', 'application/json')
-      res.end(JSON.stringify({ uptime: process.uptime() }))
+      json(res, { uptime: process.uptime() })
     })
     await promisify(server.listen.bind(server))(this.httpPort)
     console.log(`http://localhost:${this.httpPort}`)
