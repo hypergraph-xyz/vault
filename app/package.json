@@ -16,6 +16,7 @@
     "body": "^5.1.0",
     "branca": "^0.3.0",
     "cookie": "^0.4.0",
+    "http-assert": "^1.4.1",
     "http-responders": "^1.0.0",
     "mailgun-js": "^0.22.0",
     "mustache": "^4.0.0",

@@ -2,6 +2,7 @@
 
 const createStripe = require('stripe')
 const textBody = require('body')
+const jsonBody = require('body/json')
 const { promisify } = require('util')
 const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
@@ -14,6 +15,7 @@ const Mailgun = require('mailgun-js')
 const emails = require('./lib/emails')
 const createBranca = require('branca')
 const config = require('./lib/config')
+const assert = require('http-assert')
 
 const stripe = createStripe(config.stripeSecretKey)
 const branca = createBranca(config.brancaKey)
@@ -106,6 +108,12 @@ const handler = async (req, res) => {
   } else if (get('/api/modules')) {
     const { rows: modules } = await pool.query('SELECT * FROM modules')
     json(res, modules)
+  } else if (post('/api/modules')) {
+    assert(session, 401)
+    const { url } = await promisify(jsonBody)(req, res)
+    assert(url, 400, '%s: .url required')
+    await pool.query('INSERT INTO modules (url) VALUES ($1)', [url])
+    res.end('OK')
   }
 }
 
