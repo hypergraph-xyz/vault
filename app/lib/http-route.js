@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = req => (method, pathname) => {
+module.exports = req => {
   const url = new URL(req.url, 'http://localhost')
-  return req.method === method && url.pathname === pathname
+  return `${req.method} ${url.pathname}`
 }
