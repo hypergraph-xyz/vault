@@ -13,24 +13,15 @@ const { parse } = require('querystring')
 const Mailgun = require('mailgun-js')
 const emails = require('./lib/emails')
 const createBranca = require('branca')
+const config = require('./lib/config')
 
-const {
-  STRIPE_WEBHOOK_SECRET: stripeWebhookSecret,
-  STRIPE_SECRET_KEY: stripeSecretKey,
-  MAILGUN_API_KEY: mailgunApiKey,
-  MAILGUN_DOMAIN: mailgunDomain = 'smtp.hypergraph.xyz',
-  MAILGUN_HOST: mailgunHost = 'api.eu.mailgun.net',
-  VAULT_URL: vaultUrl = 'http://localhost:8080',
-  BRANCA_KEY: brancaKey
-} = process.env
-
-const stripe = createStripe(stripeSecretKey)
-const branca = createBranca(brancaKey)
+const stripe = createStripe(config.stripeSecretKey)
+const branca = createBranca(config.brancaKey)
 const pool = new Pool()
 const mailgun = new Mailgun({
-  apiKey: mailgunApiKey,
-  domain: mailgunDomain,
-  host: mailgunHost
+  apiKey: config.mailgunApiKey,
+  domain: config.mailgunDomain,
+  host: config.mailgunHost
 })
 
 const handler = async (req, res) => {
@@ -59,7 +50,11 @@ const handler = async (req, res) => {
   } else if (post('/stripe')) {
     const body = await promisify(textBody)(req, res, { encoding: undefined })
     const sig = req.headers['stripe-signature']
-    const event = stripe.webhooks.constructEvent(body, sig, stripeWebhookSecret)
+    const event = stripe.webhooks.constructEvent(
+      body,
+      sig,
+      config.stripeWebhookSecret
+    )
     console.log('stripe', event)
     json(res, { received: true })
   } else if (get('/')) {
@@ -74,7 +69,7 @@ const handler = async (req, res) => {
     const token = branca.encode(to)
     await pool.query('INSERT INTO sign_in_tokens (value) VALUES ($1)', [token])
 
-    const link = `${vaultUrl}/create-session?token=${token}`
+    const link = `${config.vaultUrl}/create-session?token=${token}`
     const email = req.url === '/sign-up' ? emails.signUp : emails.signIn
 
     await mailgun.messages().send({
@@ -84,7 +79,7 @@ const handler = async (req, res) => {
     })
     res.end(await view('check-email'))
   } else if (get('/create-session')) {
-    const token = new URL(req.url, vaultUrl).searchParams.get('token')
+    const token = new URL(req.url, config.vaultUrl).searchParams.get('token')
     const query = `
       DELETE FROM sign_in_tokens
       WHERE value = $1
