@@ -18,14 +18,19 @@ class Session {
   }
 
   static get (req, res) {
-    const { token } = cookie.parse(req.headers.cookie || '')
-    let email
-    if (token) {
-      try {
-        email = branca.decode(token).toString()
-      } catch (_) {}
+    let token, email
+
+    if (req.headers.authorization) {
+      const segs = req.headers.authorization.split(' ')
+      if (segs[0] === 'Bearer' && segs[1]) token = segs[1]
+    } else {
+      token = cookie.parse(req.headers.cookie || '').token
     }
-    if (!email) return
+    try {
+      email = branca.decode(token).toString()
+    } catch (_) {
+      return
+    }
     return new Session({ res, email })
   }
 
