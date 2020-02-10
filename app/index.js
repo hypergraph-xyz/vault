@@ -5,7 +5,7 @@ const textBody = require('body')
 const jsonBody = require('body/json')
 const { promisify } = require('util')
 const http = require('./lib/http-handler')
-const routes = require('./lib/http-routes')
+const createRoute = require('./lib/http-route')
 const { json, redirect } = require('http-responders')
 const createView = require('./lib/http-view')
 const { Pool } = require('pg')
@@ -25,11 +25,11 @@ const mailgun = new Mailgun({
 })
 
 const handler = async (req, res) => {
-  const { get, post } = routes(req)
+  const route = createRoute(req)
   const session = Session.get(req, res)
   const view = createView({ session })
 
-  if (get('/health')) {
+  if (route('GET', '/health')) {
     let dbTime
     try {
       const { rows } = await pool.query('SELECT NOW()')
@@ -41,7 +41,7 @@ const handler = async (req, res) => {
       uptime: process.uptime(),
       dbTime
     })
-  } else if (post('/stripe')) {
+  } else if (route('POST', '/stripe')) {
     const body = await promisify(textBody)(req, res, { encoding: undefined })
     const sig = req.headers['stripe-signature']
     const event = stripe.webhooks.constructEvent(
@@ -51,11 +51,11 @@ const handler = async (req, res) => {
     )
     console.log('stripe', event)
     json(res, { received: true })
-  } else if (get('/')) {
+  } else if (route('GET', '/')) {
     res.end(await view('home'))
-  } else if (get('/authenticate')) {
+  } else if (route('GET', '/authenticate')) {
     res.end(await view('authenticate'))
-  } else if (post('/authenticate')) {
+  } else if (route('POST', '/authenticate')) {
     const body = await promisify(textBody)(req, res)
     const { email: to } = parse(body)
     const token = Session.createToken(to)
@@ -70,22 +70,22 @@ const handler = async (req, res) => {
       to
     })
     res.end(await view('check-email'))
-  } else if (get('/create-session')) {
+  } else if (route('GET', '/create-session')) {
     const token = new URL(req.url, config.vaultUrl).searchParams.get('token')
     const authenticated = await Session.authenticate({ token, pool, res })
     if (authenticated) redirect(req, res, '/')
-  } else if (get('/sign-out')) {
+  } else if (route('GET', '/sign-out')) {
     session.destroy()
     redirect(req, res, '/')
-  } else if (get('/modules')) {
+  } else if (route('GET', '/modules')) {
     const { rows: modules } = await pool.query('SELECT * FROM modules')
     res.end(
       await view('modules', { modules: JSON.stringify(modules, null, 2) })
     )
-  } else if (get('/api/modules')) {
+  } else if (route('GET', '/api/modules')) {
     const { rows: modules } = await pool.query('SELECT * FROM modules')
     json(res, modules)
-  } else if (post('/api/modules')) {
+  } else if (route('POST', '/api/modules')) {
     assert(session, 401)
     const { url } = await promisify(jsonBody)(req, res)
     assert(url, 400, '%s: .url required')
