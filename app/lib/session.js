@@ -43,10 +43,8 @@ class Session {
 
     const authenticated = rowCount === 1
     if (authenticated) {
-      res.setHeader(
-        'set-cookie',
-        cookie.serialize('token', token, { httpOnly: true })
-      )
+      const header = cookie.serialize('token', token, { httpOnly: true })
+      res.setHeader('set-cookie', header)
     }
 
     const cleanup = `
