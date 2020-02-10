@@ -7,18 +7,16 @@ const { promisify } = require('util')
 const http = require('./lib/http-handler')
 const routes = require('./lib/http-routes')
 const { json, redirect } = require('http-responders')
-const cookie = require('./lib/http-cookie')
 const createView = require('./lib/http-view')
 const { Pool } = require('pg')
 const { parse } = require('querystring')
 const Mailgun = require('mailgun-js')
 const emails = require('./lib/emails')
-const createBranca = require('branca')
 const config = require('./lib/config')
 const assert = require('http-assert')
+const Session = require('./lib/session')
 
 const stripe = createStripe(config.stripeSecretKey)
-const branca = createBranca(config.brancaKey)
 const pool = new Pool()
 const mailgun = new Mailgun({
   apiKey: config.mailgunApiKey,
@@ -28,13 +26,7 @@ const mailgun = new Mailgun({
 
 const handler = async (req, res) => {
   const { get, post } = routes(req)
-  const token = cookie.get(req, 'token')
-  let session
-  if (token) {
-    try {
-      session = branca.decode(token).toString()
-    } catch (_) {}
-  }
+  const session = Session.get(req, res)
   const view = createView({ session })
 
   if (get('/health')) {
@@ -66,7 +58,7 @@ const handler = async (req, res) => {
   } else if (post('/authenticate')) {
     const body = await promisify(textBody)(req, res)
     const { email: to } = parse(body)
-    const token = branca.encode(to)
+    const token = Session.createToken(to)
     const query = 'INSERT INTO authenticate_tokens (value) VALUES ($1)'
     await pool.query(query, [token])
 
@@ -80,25 +72,10 @@ const handler = async (req, res) => {
     res.end(await view('check-email'))
   } else if (get('/create-session')) {
     const token = new URL(req.url, config.vaultUrl).searchParams.get('token')
-    const query = `
-      DELETE FROM authenticate_tokens
-      WHERE value = $1
-      AND created_at >= NOW() - '1 day'::interval
-    `
-    const { rowCount } = await pool.query(query, [token])
-
-    if (rowCount === 1) {
-      cookie.set(res, 'token', token)
-      redirect(req, res, '/')
-    }
-
-    const cleanup = `
-      DELETE FROM authenticate_tokens
-      WHERE created_at < NOW() - '1 day'::interval
-    `
-    pool.query(cleanup).catch(console.error)
+    const authenticated = await Session.authenticate({ token, pool, res })
+    if (authenticated) redirect(req, res, '/')
   } else if (get('/sign-out')) {
-    cookie.unset(res, 'token')
+    session.destroy()
     redirect(req, res, '/')
   } else if (get('/modules')) {
     const { rows: modules } = await pool.query('SELECT * FROM modules')
