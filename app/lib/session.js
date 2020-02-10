@@ -1,7 +1,7 @@
 'use strict'
 
+const cookie = require('cookie')
 const createBranca = require('branca')
-const cookie = require('./http-cookie')
 const { brancaKey } = require('./config')
 
 const branca = createBranca(brancaKey)
@@ -13,11 +13,12 @@ class Session {
   }
 
   destroy () {
-    cookie.unset(this.res, 'token')
+    const header = cookie.serialize('token', '', { maxAge: 0 })
+    this.res.setHeader('set-cookie', header)
   }
 
   static get (req, res) {
-    const token = cookie.get(req, 'token')
+    const { token } = cookie.parse(req.headers.cookie || '')
     let email
     if (token) {
       try {
@@ -41,7 +42,12 @@ class Session {
     const { rowCount } = await pool.query(query, [token])
 
     const authenticated = rowCount === 1
-    if (authenticated) cookie.set(res, 'token', token)
+    if (authenticated) {
+      res.setHeader(
+        'set-cookie',
+        cookie.serialize('token', token, { httpOnly: true })
+      )
+    }
 
     const cleanup = `
       DELETE FROM authenticate_tokens
