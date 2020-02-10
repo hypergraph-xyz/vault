@@ -59,21 +59,19 @@ const handler = async (req, res) => {
     json(res, { received: true })
   } else if (get('/')) {
     res.end(await view('home'))
-  } else if (get('/sign-up')) {
-    res.end(await view('sign-up'))
-  } else if (get('/sign-in')) {
-    res.end(await view('sign-in'))
-  } else if (post('/sign-up') || post('/sign-in')) {
+  } else if (get('/authenticate')) {
+    res.end(await view('authenticate'))
+  } else if (post('/authenticate')) {
     const body = await promisify(textBody)(req, res)
     const { email: to } = parse(body)
     const token = branca.encode(to)
-    await pool.query('INSERT INTO sign_in_tokens (value) VALUES ($1)', [token])
+    const query = 'INSERT INTO authenticate_tokens (value) VALUES ($1)'
+    await pool.query(query, [token])
 
     const link = `${config.vaultUrl}/create-session?token=${token}`
-    const email = req.url === '/sign-up' ? emails.signUp : emails.signIn
 
     await mailgun.messages().send({
-      ...email(link),
+      ...emails.authenticate(link),
       from: 'Hypergraph <support@hypergraph.xyz>',
       to
     })
@@ -81,7 +79,7 @@ const handler = async (req, res) => {
   } else if (get('/create-session')) {
     const token = new URL(req.url, config.vaultUrl).searchParams.get('token')
     const query = `
-      DELETE FROM sign_in_tokens
+      DELETE FROM authenticate_tokens
       WHERE value = $1
       AND created_at >= NOW() - '1 day'::interval
     `
@@ -93,7 +91,7 @@ const handler = async (req, res) => {
     }
 
     const cleanup = `
-      DELETE FROM sign_in_tokens
+      DELETE FROM authenticate_tokens
       WHERE created_at < NOW() - '1 day'::interval
     `
     pool.query(cleanup).catch(console.error)
