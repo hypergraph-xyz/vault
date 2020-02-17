@@ -15,6 +15,7 @@ const emails = require('./lib/emails')
 const config = require('./lib/config')
 const assert = require('http-assert')
 const Session = require('./lib/session')
+const words = require('friendly-words')
 
 const stripe = createStripe(config.stripeSecretKey)
 const pool = new Pool()
@@ -67,12 +68,16 @@ const handler = async (req, res) => {
       const body = await promisify(textBody)(req, res)
       const { email, callback } = parse(req, body)
       const link = await Session.request({ pool, email, callback })
+      const testWords = words.objects
+        .sort(() => (Math.random() > 0.5 ? 1 : -1))
+        .slice(0, 3)
+        .join(' ')
       await mailgun.messages().send({
-        ...emails.authenticate(link),
+        ...emails.authenticate({ link, testWords }),
         from: 'Hypergraph <support@hypergraph.xyz>',
         to: email
       })
-      res.end(await view('check-email'))
+      res.end(await view('check-email', { testWords }))
       break
     }
     case 'GET /create-session': {
