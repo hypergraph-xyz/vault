@@ -65,18 +65,12 @@ const handler = async (req, res) => {
     }
     case 'POST /authenticate': {
       const body = await promisify(textBody)(req, res)
-      const { email: to, callback } = parse(req, body)
-      const token = Session.createToken(to)
-      const query =
-        'INSERT INTO authenticate_tokens (value, callback) VALUES ($1, $2)'
-      await pool.query(query, [token, callback])
-
-      const link = `${config.vaultUrl}/create-session?token=${token}`
-
+      const { email, callback } = parse(req, body)
+      const link = await Session.request({ pool, email, callback })
       await mailgun.messages().send({
         ...emails.authenticate(link),
         from: 'Hypergraph <support@hypergraph.xyz>',
-        to
+        to: email
       })
       res.end(await view('check-email'))
       break

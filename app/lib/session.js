@@ -2,7 +2,7 @@
 
 const cookie = require('cookie')
 const createBranca = require('branca')
-const { brancaKey } = require('./config')
+const { brancaKey, vaultUrl } = require('./config')
 
 const branca = createBranca(brancaKey)
 
@@ -65,6 +65,15 @@ class Session {
     pool.query(cleanup).catch(console.error)
 
     return { authenticated, callback }
+  }
+
+  static async request ({ pool, email, callback }) {
+    const token = this.createToken(email)
+    const query =
+      'INSERT INTO authenticate_tokens (value, callback) VALUES ($1, $2)'
+    await pool.query(query, [token, callback])
+
+    return `${vaultUrl}/create-session?token=${token}`
   }
 }
 
