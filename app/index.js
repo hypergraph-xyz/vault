@@ -122,7 +122,14 @@ const handler = async (req, res) => {
       assert(session, 401)
       const { url } = await promisify(jsonBody)(req, res)
       assert(url, 400, '%s: .url required')
-      await pool.query('INSERT INTO modules (url) VALUES ($1)', [url])
+      try {
+        await pool.query('INSERT INTO modules (url) VALUES ($1)', [url])
+      } catch (err) {
+        if (err.constraint === 'url_unique') {
+          assert(false, 400, '%s: .url must be unique')
+        }
+        throw err
+      }
       res.end('OK')
       break
     }
