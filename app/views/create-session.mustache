@@ -1,0 +1,11 @@
+{{#layout}}
+  <script>
+    (async () => {
+      await fetch('{{{ callback }}}', {
+        method: 'POST',
+        body: JSON.stringify({ token: '{{ token }}' })
+      })
+    })()
+  </script>
+  <p>You have successfully been logged in. You can close this window now.</p>
+{{/layout}}

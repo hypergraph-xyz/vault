@@ -9,7 +9,7 @@ const route = require('./lib/http-route')
 const { json, redirect } = require('http-responders')
 const createView = require('./lib/http-view')
 const { Pool } = require('pg')
-const { parse } = require('querystring')
+const parse = require('./lib/http-parse')
 const Mailgun = require('mailgun-js')
 const emails = require('./lib/emails')
 const config = require('./lib/config')
@@ -65,12 +65,13 @@ const handler = async (req, res) => {
     }
     case 'POST /authenticate': {
       const body = await promisify(textBody)(req, res)
-      const { email: to } = parse(body)
+      const { email: to, callback } = parse(req, body)
       const token = Session.createToken(to)
       const query = 'INSERT INTO authenticate_tokens (value) VALUES ($1)'
       await pool.query(query, [token])
 
-      const link = `${config.vaultUrl}/create-session?token=${token}`
+      let link = `${config.vaultUrl}/create-session?token=${token}`
+      if (callback) link += `&callback=${callback}`
 
       await mailgun.messages().send({
         ...emails.authenticate(link),
@@ -81,9 +82,17 @@ const handler = async (req, res) => {
       break
     }
     case 'GET /create-session': {
-      const token = new URL(req.url, config.vaultUrl).searchParams.get('token')
+      const params = new URL(req.url, config.vaultUrl).searchParams
+      const token = params.get('token')
+      const callback = params.get('callback')
       const authenticated = await Session.authenticate({ token, pool, res })
-      if (authenticated) redirect(req, res, '/')
+      if (authenticated) {
+        if (callback) {
+          res.end(await view('create-session', { callback, token }))
+        } else {
+          redirect(req, res, '/')
+        }
+      }
       break
     }
     case 'GET /sign-out': {
