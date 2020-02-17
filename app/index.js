@@ -77,7 +77,11 @@ const handler = async (req, res) => {
         from: 'Hypergraph <support@hypergraph.xyz>',
         to: email
       })
-      res.end(await view('check-email', { testWords }))
+      if (req.headers.accept === 'application/json') {
+        json(res, { testWords })
+      } else {
+        res.end(await view('check-email', { testWords }))
+      }
       break
     }
     case 'GET /create-session': {
