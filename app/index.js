@@ -67,11 +67,11 @@ const handler = async (req, res) => {
       const body = await promisify(textBody)(req, res)
       const { email: to, callback } = parse(req, body)
       const token = Session.createToken(to)
-      const query = 'INSERT INTO authenticate_tokens (value) VALUES ($1)'
-      await pool.query(query, [token])
+      const query =
+        'INSERT INTO authenticate_tokens (value, callback) VALUES ($1, $2)'
+      await pool.query(query, [token, callback])
 
-      let link = `${config.vaultUrl}/create-session?token=${token}`
-      if (callback) link += `&callback=${callback}`
+      const link = `${config.vaultUrl}/create-session?token=${token}`
 
       await mailgun.messages().send({
         ...emails.authenticate(link),
@@ -84,8 +84,11 @@ const handler = async (req, res) => {
     case 'GET /create-session': {
       const params = new URL(req.url, config.vaultUrl).searchParams
       const token = params.get('token')
-      const callback = params.get('callback')
-      const authenticated = await Session.authenticate({ token, pool, res })
+      const { authenticated, callback } = await Session.authenticate({
+        token,
+        pool,
+        res
+      })
       if (authenticated) {
         if (callback) {
           res.end(await view('create-session', { callback, token }))

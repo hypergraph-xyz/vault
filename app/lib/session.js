@@ -39,12 +39,18 @@ class Session {
   }
 
   static async authenticate ({ token, pool, res }) {
-    const query = `
+    const selectQuery = `
+      SELECT callback FROM authenticate_tokens WHERE value = $1
+    `
+    const { rows } = await pool.query(selectQuery, [token])
+    const callback = rows[0] && rows[0].callback
+
+    const deleteQuery = `
       DELETE FROM authenticate_tokens
       WHERE value = $1
       AND created_at >= NOW() - '1 day'::interval
     `
-    const { rowCount } = await pool.query(query, [token])
+    const { rowCount } = await pool.query(deleteQuery, [token])
 
     const authenticated = rowCount === 1
     if (authenticated) {
@@ -58,7 +64,7 @@ class Session {
     `
     pool.query(cleanup).catch(console.error)
 
-    return authenticated
+    return { authenticated, callback }
   }
 }
 
