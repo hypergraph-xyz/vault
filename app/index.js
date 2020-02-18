@@ -17,6 +17,7 @@ const assert = require('http-assert')
 const Session = require('./lib/session')
 const words = require('friendly-words')
 const P2P = require('@p2pcommons/sdk-js')
+const pTimeout = require('p-timeout')
 
 const stripe = createStripe(config.stripeSecretKey)
 const pool = new Pool()
@@ -129,10 +130,12 @@ const handler = async (req, res) => {
       const p2p = new P2P({
         baseDir: `/tmp/${Date.now()}-${Math.random()}`
       })
+      await p2p.ready()
+
       try {
-        await p2p.ready()
-        const mod = await p2p._getModule(key, version)
-        title = mod.metadata.title
+        ;({
+          metadata: { title }
+        } = await pTimeout(p2p._getModule(key, version), 5000))
       } finally {
         await p2p.destroy()
       }

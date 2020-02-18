@@ -23,6 +23,7 @@
     "mailgun-js": "^0.22.0",
     "mustache": "^4.0.0",
     "node-pg-migrate": "^4.2.1",
+    "p-timeout": "^3.2.0",
     "pg": "^7.17.0",
     "stripe": "^7.15.0"
   },
