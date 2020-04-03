@@ -10,11 +10,9 @@ const { STATUS_CODES } = require('http')
 //   - Errors will be caught and logged, with the appropriate http response code
 //     and text
 //   - If no response was sent, a 404 will be used
-//   - Useful request information will be logged
 //   - Stack traces will be printed during development for 5xx errors
 
 module.exports = handler => (req, res) => {
-  const start = new Date()
   handler(req, res)
     .catch(err => {
       res.statusCode = err.statusCode || 500
@@ -40,12 +38,5 @@ module.exports = handler => (req, res) => {
         res.statusCode = 404
         res.end('Not found')
       }
-
-      console.log(
-        req.method,
-        req.url,
-        res.statusCode,
-        `(${new Date() - start} ms)`
-      )
     })
 }
