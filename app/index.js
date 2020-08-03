@@ -129,9 +129,8 @@ const handler = async (req, res) => {
         baseDir: `/tmp/${Date.now()}-${Math.random()}`
       })
       try {
-        await p2p.ready()
-        const mod = await p2p._getModule(key, version)
-        title = mod.metadata.title
+        const mod = await p2p.clone(key, version, /* download */ false)
+        title = mod.rawJSON.title
       } finally {
         await p2p.destroy()
       }
@@ -155,6 +154,7 @@ const handler = async (req, res) => {
 
 const withLog = handler => async (req, res) => {
   const start = new Date()
+  console.log(req.method, req.url, '...')
   try {
     await handler(req, res)
   } finally {
