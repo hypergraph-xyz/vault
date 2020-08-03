@@ -120,7 +120,6 @@ const handler = async (req, res) => {
       break
     }
     case 'POST /api/modules': {
-      assert(session, 401)
       const { url } = await promisify(jsonBody)(req, res)
       assert(url, 400, '%s: .url required')
       const [key, version] = url.split('+')
