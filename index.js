@@ -2,7 +2,6 @@
 
 const createStripe = require('stripe')
 const textBody = require('body')
-const jsonBody = require('body/json')
 const { promisify } = require('util')
 const http = require('./lib/http-handler')
 const route = require('./lib/http-route')
@@ -119,16 +118,16 @@ const handler = async (req, res) => {
       break
     }
     case 'POST /api/modules': {
-      const { url } = await promisify(jsonBody)(req, res)
-      assert(url, 400, '%s: .url required')
-
+      const url = await promisify(textBody)(req, res)
+      assert(
+        /^hyper:\/\/[a-f0-9]{64}(\+[0-9]+)?$/i.test(url),
+        400,
+        '%s: invalid url'
+      )
       try {
         await pool.query('INSERT INTO modules (url) VALUES ($1)', [url])
       } catch (err) {
-        if (err.constraint === 'url_unique') {
-          assert(false, 400, '%s: .url must be unique')
-        }
-        throw err
+        if (err.constraint !== 'url_unique') throw err
       }
       res.end('OK')
       break
