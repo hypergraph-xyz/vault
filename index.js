@@ -135,19 +135,4 @@ const handler = async (req, res) => {
   }
 }
 
-const withLog = handler => async (req, res) => {
-  const start = new Date()
-  console.log(req.method, req.url, '...')
-  try {
-    await handler(req, res)
-  } finally {
-    console.log(
-      req.method,
-      req.url,
-      res.statusCode,
-      `(${new Date() - start} ms)`
-    )
-  }
-}
-
-module.exports = http(withLog(handler))
+module.exports = http(handler)
