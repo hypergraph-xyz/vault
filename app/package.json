@@ -13,7 +13,6 @@
     "test": "prettier-standard && standard"
   },
   "dependencies": {
-    "@p2pcommons/sdk-js": "^0.7.0",
     "body": "^5.1.0",
     "branca": "^0.3.0",
     "cookie": "^0.4.0",

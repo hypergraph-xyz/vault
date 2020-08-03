@@ -16,7 +16,6 @@ const config = require('./lib/config')
 const assert = require('http-assert')
 const Session = require('./lib/session')
 const words = require('friendly-words')
-const P2P = require('@p2pcommons/sdk-js')
 
 const stripe = createStripe(config.stripeSecretKey)
 const pool = new Pool()
@@ -122,24 +121,9 @@ const handler = async (req, res) => {
     case 'POST /api/modules': {
       const { url } = await promisify(jsonBody)(req, res)
       assert(url, 400, '%s: .url required')
-      const [key, version] = url.split('+')
-      let title
-
-      const p2p = new P2P({
-        baseDir: `/tmp/${Date.now()}-${Math.random()}`
-      })
-      try {
-        const mod = await p2p.clone(key, version, /* download */ false)
-        title = mod.rawJSON.title
-      } finally {
-        await p2p.destroy()
-      }
 
       try {
-        await pool.query('INSERT INTO modules (url, title) VALUES ($1, $2)', [
-          url,
-          title
-        ])
+        await pool.query('INSERT INTO modules (url) VALUES ($1)', [url])
       } catch (err) {
         if (err.constraint === 'url_unique') {
           assert(false, 400, '%s: .url must be unique')
