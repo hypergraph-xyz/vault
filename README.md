@@ -78,6 +78,12 @@ fargate service env set vault \
   --env VAULT_URL=https://VAULT_DOMAIN \
   --region eu-west-1
 
+# If postgres ssl is required
+fargate service env set vault \
+  --env PGSSL=true \
+  --env PGSSLMODE=require
+  --region eu-west-1
+
 # Get the load balancer domain from
 fargate lb info vault --region eu-west-1
 
