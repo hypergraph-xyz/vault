@@ -17,7 +17,9 @@ const Session = require('./lib/session')
 const words = require('friendly-words')
 
 const stripe = createStripe(config.stripeSecretKey)
-const pool = new Pool()
+const pool = new Pool({
+  ssl: Boolean(process.env.PGSSLMODE)
+})
 const mailgun = new Mailgun({
   apiKey: config.mailgunApiKey,
   domain: config.mailgunDomain,
