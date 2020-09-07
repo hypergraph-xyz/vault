@@ -117,6 +117,14 @@ const handler = async (req, res) => {
       json(res, modules)
       break
     }
+    case 'GET /api/keys': {
+      const { rows: modules } = await pool.query('SELECT url FROM modules')
+      json(
+        res,
+        modules.map(module => module.url)
+      )
+      break
+    }
     case 'POST /api/modules': {
       const url = await promisify(textBody)(req, res)
       assert(
