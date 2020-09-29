@@ -141,7 +141,11 @@ const handler = async (req, res) => {
       break
     }
     case 'GET /api/discover': {
-      json(res, [])
+      json(res, [
+        'hypergraph://cc03c3e178cff9cc030b1141763c53989e3164f2bb6ce4e5c7cd642503f2f0d5+42',
+        'hypergraph://4dca21a40548b054ac7eee5351c2326ff453671ff93fbed07585b4c86388b6ef',
+        'hypergraph://1f781b4bc8322a6f194fe469eaf883c5d988d1a8705db309a77b7e72a16d5e75'
+      ])
       break
     }
   }
