@@ -140,6 +140,13 @@ const handler = async (req, res) => {
       res.end('OK')
       break
     }
+    case 'GET /api/discover': {
+      json(
+        res,
+        []
+      )
+      break
+    }
   }
 }
 
