@@ -141,10 +141,7 @@ const handler = async (req, res) => {
       break
     }
     case 'GET /api/discover': {
-      json(
-        res,
-        []
-      )
+      json(res, [])
       break
     }
   }
