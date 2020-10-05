@@ -75,7 +75,7 @@ fargate service env set vault \
   --env PGPORT=... \
   --env PGUSER=... \
   --env PGPASSWORD=... \
-  --env PGDATABASE=vault \
+  --env PGDATABASE=... \
   --env MAILGUN_API_KEY=... \
   --env STRIPE_SECRET_KEY=... \
   --env STRIPE_WEBHOOK_SECRET=... \
