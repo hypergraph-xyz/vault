@@ -54,6 +54,10 @@ fargate lb create vault --port 443 --certificate VAULT_DOMAIN --region eu-west-1
 # See https://github.com/awslabs/fargatecli/issues/104
 open https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LoadBalancers:
 
+# Using the AWS UI, create a role with name `vault`, based on the template
+# Elastic Container Service -> ECSTask
+open https://console.aws.amazon.com/iam/home?region=eu-west-1#/roles
+
 # Create and deploy the service
 fargate service create vault \
   --lb vault \
