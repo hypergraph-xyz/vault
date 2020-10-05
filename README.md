@@ -72,6 +72,7 @@ fargate service info vault --region eu-west-1
 # Set credentials
 fargate service env set vault \
   --env PGHOST=... \
+  --env PGPORT=... \
   --env PGUSER=... \
   --env PGPASSWORD=... \
   --env PGDATABASE=vault \
