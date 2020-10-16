@@ -45,25 +45,25 @@ fargate certificate request VAULT_DOMAIN --region eu-west-1
 
 # Create the DNS records as requested
 # Wait for it's verification
-open https://eu-west-1.console.aws.amazon.com/acm/home?region=eu-west-1#/
+open "https://eu-west-1.console.aws.amazon.com/acm/home?region=eu-west-1#/"
 
 # Create a load balancer
 fargate lb create vault --port 443 --certificate VAULT_DOMAIN --region eu-west-1
 
 # Using the AWS UI, add another listener on port 80, which redirects to HTTPS
 # See https://github.com/awslabs/fargatecli/issues/104
-open https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LoadBalancers:
+open "https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LoadBalancers:"
 
 # Using the AWS UI, create a role with name `vault`, based on the template
 # Elastic Container Service -> ECSTask
-open https://console.aws.amazon.com/iam/home?region=eu-west-1#/roles
+open "https://console.aws.amazon.com/iam/home?region=eu-west-1#/roles"
 
 # Create and deploy the service
 fargate service create vault \
   --lb vault \
   --port 80 \
-  --rule PATH=* \
-  --task-role vault
+  --rule PATH="*" \
+  --task-role vault \
   --region eu-west-1
 
 # Wait for the service to be up by checking
