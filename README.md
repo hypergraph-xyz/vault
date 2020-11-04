@@ -1,4 +1,4 @@
-# Hypergraph Web App
+# Hypergraph Vault <img src="https://raw.githubusercontent.com/hypergraph-xyz/design/main/hypergraph-logomark-1024-square.png" align="right" height="64" />
 
 ## Secrets
 
