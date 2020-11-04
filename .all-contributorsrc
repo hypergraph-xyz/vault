@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "juliangruber",
+      "name": "Julian Gruber",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10247?v=4",
+      "profile": "https://github.com/juliangruber",
+      "contributions": [
+        "code",
+        "infra",
+        "doc",
+        "test"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "vault",
+  "projectOwner": "hypergraph-xyz",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
