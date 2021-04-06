@@ -154,6 +154,10 @@ const handler = async (req, res) => {
       ])
       break
     }
+    case 'GET /api/delete': {
+      json(res, [])
+      break
+    }
   }
 }
 
