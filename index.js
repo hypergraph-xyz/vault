@@ -150,7 +150,8 @@ const handler = async (req, res) => {
         'hypergraph://4faae28c5f61d90d8cd04a545b4814daa719c01b6e03e14dae33f986edf69208+17',
         'hypergraph://8f694fbdf324cbb83deaecb4a82d13fbff817d8237726cbe0c3f0aa37c13ae11+6',
         'hypergraph://3999d78fcbdf4544f9f3a9028956c572e012a2181454a79ffe5e560746888e3f+8',
-        'hypergraph://27fbb1cf8413b28d29ace15282cda9080f225f3750e2078c986aff4ff82831be+9'
+        'hypergraph://27fbb1cf8413b28d29ace15282cda9080f225f3750e2078c986aff4ff82831be+9',
+        'hypergraph://0387c40aefcfe504a56a48df8e3119449203b2bd3bec787b07db75aa864c4087+9'
       ])
       break
     }
